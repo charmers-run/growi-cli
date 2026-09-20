@@ -1,0 +1,24 @@
+{
+  "name": "growi",
+  "version": "0.0.1",
+  "description": "Growi CLI",
+  "keywords": [
+    "growi",
+    "cli"
+  ],
+  "homepage": "https://github.com/under18dev/growi-cli#readme",
+  "bugs": {
+    "url": "https://github.com/under18dev/growi-cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/under18dev/growi-cli.git"
+  },
+  "license": "MIT",
+  "author": "tanahiro2010 <herentongkegu087@gmail.com>",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "dev"
+  }
+}
