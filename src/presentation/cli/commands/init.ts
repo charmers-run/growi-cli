@@ -28,8 +28,13 @@ class InitCommand extends CommandBase {
     const profile = Config.profiles.find(profileId);
     if (!profile) throw new Error("Profile Not Found");
 
+    const projectPath = process.cwd();
+    if (Config.projects.exists(projectPath) && !force) {
+      throw new Error(`Project config already exists in ${projectPath}`);
+    }
+
     try {
-      Config.projects.init(process.cwd(), profile.id, articlePath, { force });
+      Config.projects.init(projectPath, profile.id, articlePath, { force });
     } catch (e) {
       console.error("Failed to create config folder");
       console.error(e);
