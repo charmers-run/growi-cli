@@ -3,11 +3,14 @@ import type { ProjectConfig } from "./model";
 import { projectConfigDirPath, projectConfigFilePath } from "./paths";
 
 type ProjectConfigUpdate = Partial<Omit<ProjectConfig, "createdAt" | "updatedAt">>;
+type ProjectConfigInitOptions = {
+  force?: boolean;
+};
 
 type ProjectConfigRepositoryType = {
   exists: (projectPath: string) => boolean;
   load: (projectPath: string) => ProjectConfig;
-  init: (projectPath: string, profile: string, path: string) => void;
+  init: (projectPath: string, profile: string, path: string, options?: ProjectConfigInitOptions) => void;
   update: (projectPath: string, data: ProjectConfigUpdate) => void;
 };
 
@@ -16,8 +19,8 @@ const ProjectConfigRepository: ProjectConfigRepositoryType = {
 
   load: (projectPath) => JSON.parse(fs.readFileSync(projectConfigFilePath(projectPath), "utf-8")) as ProjectConfig,
 
-  init: (projectPath, profile, path = "") => {
-    if (ProjectConfigRepository.exists(projectPath)) {
+  init: (projectPath, profile, path = "", options = {}) => {
+    if (ProjectConfigRepository.exists(projectPath) && !options.force) {
       console.error(`Project config already exists in ${projectPath}`);
       return;
     }
@@ -69,4 +72,4 @@ const ProjectConfigRepository: ProjectConfigRepositoryType = {
 };
 
 export { ProjectConfigRepository };
-export type { ProjectConfigRepositoryType, ProjectConfigUpdate };
+export type { ProjectConfigInitOptions, ProjectConfigRepositoryType, ProjectConfigUpdate };
