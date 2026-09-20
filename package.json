@@ -17,11 +17,25 @@
   "license": "MIT",
   "author": "tanahiro2010 <herentongkegu087@gmail.com>",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "bin": {
+    "growi": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "dev"
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outfile dist/index.js --target node",
+    "typecheck": "tsc --noEmit",
+    "test": "bun run typecheck"
   },
   "dependencies": {
-    "axios": "^1.20.0"
+    "axios": "^1.20.0",
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "typescript": "^7.0.2"
   }
 }
