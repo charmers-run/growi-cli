@@ -15,6 +15,9 @@ class ProfileAddCommand extends CommandBase {
   }
 
   protected async action(profileId: string, accessToken: string, baseEndpoint: string): Promise<void> {
+    const profile = Config.profiles.find(profileId);
+    if (profile) throw Error("Profile defined");
+
     Config.profiles.add(profileId, accessToken, baseEndpoint);
     console.log(`Profile '${profileId}' added`);
   }
