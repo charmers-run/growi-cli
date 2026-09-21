@@ -7,6 +7,7 @@ type ProfileConfigRepositoryType = {
   load: () => ProfileConfig;
   init: () => void;
   add: (id: string, accessToken: string, endpoint: string) => ProfileConfig;
+  remove: (id: string) => ProfileConfig;
   update: (profiles: Profile[]) => ProfileConfig;
 };
 
@@ -43,6 +44,11 @@ const ProfileConfigRepository: ProfileConfigRepositoryType = {
       : [...currentConfig.profiles, profile];
 
     return ProfileConfigRepository.update(profiles);
+  },
+
+  remove: (id) => {
+    const currentConfig = ProfileConfigRepository.load();
+    return ProfileConfigRepository.update(currentConfig.profiles.filter((profile) => profile.id !== id));
   },
 
   update: (profiles) => {
