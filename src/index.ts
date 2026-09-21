@@ -19,5 +19,8 @@ commands.forEach((command) => {
   program.addCommand(command.build())
 })
 
-
-await program.parseAsync(process.argv);
+try {
+  await program.parseAsync(program.args);
+} catch (e) {
+  console.error(e);
+}
