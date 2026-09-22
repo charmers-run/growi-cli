@@ -1,3 +1,5 @@
+import { ValidationError } from "../../shared/errors";
+
 type ChmodPermissionTarget = "owner" | "group" | "others";
 type ChmodPermissionAction = "read" | "write" | "execute";
 
@@ -41,7 +43,9 @@ class ChmodPermission {
     const value = String(octal);
 
     if (!/^(?:0)?[0-7]{3}$/.test(value)) {
-      throw new Error(`Invalid chmod permission: ${octal}`);
+      throw new ValidationError(`Invalid chmod permission: ${octal}`, {
+        details: { octal },
+      });
     }
 
     return new ChmodPermission(Number.parseInt(value, 8));
@@ -49,7 +53,9 @@ class ChmodPermission {
 
   public static fromSymbolic(symbolic: string): ChmodPermission {
     if (!/^[r-][w-][x-][r-][w-][x-][r-][w-][x-]$/.test(symbolic)) {
-      throw new Error(`Invalid symbolic permission: ${symbolic}`);
+      throw new ValidationError(`Invalid symbolic permission: ${symbolic}`, {
+        details: { symbolic },
+      });
     }
 
     const targets: ChmodPermissionTarget[] = ["owner", "group", "others"];
@@ -118,7 +124,9 @@ class ChmodPermission {
 
   private static assertValidMode(mode: number): void {
     if (!Number.isInteger(mode) || mode < MIN_MODE || mode > MAX_MODE) {
-      throw new Error(`Invalid chmod mode: ${mode}`);
+      throw new ValidationError(`Invalid chmod mode: ${mode}`, {
+        details: { mode },
+      });
     }
   }
 }

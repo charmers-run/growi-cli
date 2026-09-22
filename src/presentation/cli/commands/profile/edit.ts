@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { Config } from "../../../../infrastructure/config";
+import { NotFoundError } from "../../../../shared/errors";
 import CommandBase from "../base";
 
 
@@ -15,7 +16,10 @@ class ProfileEditCommand extends CommandBase {
   }
 
   protected async action(profileId: string, accessToken: string, baseEndpoint: string): Promise<void> {
-    if (!Config.profiles.find(profileId)) throw new Error(`Profile '${profileId}' not found`);
+    if (!Config.profiles.find(profileId)) throw new NotFoundError(`Profile '${profileId}' not found`, {
+      resource: "profile",
+      details: { profileId },
+    });
 
     Config.profiles.add(profileId, accessToken, baseEndpoint);
     console.log(`Profile '${profileId}' updated`);
