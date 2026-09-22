@@ -1,11 +1,7 @@
-import type { Command } from "commander";
-import { Config } from "../../../infrastructure/config";
-import { ProfileRemoveCommand } from "./profile/remove";
-import { ProfileAddCommand } from "./profile/add";
-import { ProfileEditCommand } from "./profile/edit";
-
-import CommandBase from "./base";
-
+import { ProfileRemoveCommand } from "./remove";
+import { ProfileAddCommand } from "./add";
+import { ProfileEditCommand } from "./edit";
+import CommandBase from "../base";
 
 
 class ProfileCommand extends CommandBase {
@@ -17,7 +13,5 @@ class ProfileCommand extends CommandBase {
     new ProfileRemoveCommand(),
   ];
 }
-
-
 
 export { ProfileCommand };
