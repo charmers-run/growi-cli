@@ -1,12 +1,14 @@
 import * as fs from "node:fs";
 import type { Profile, ProfileConfig } from "./model";
 import { appConfigDirPath, profileConfigFilePath } from "./paths";
+import { ensureConfigDirectory, writeConfigFile } from "./permissions";
 
 type ProfileConfigRepositoryType = {
   find: (id: string) => null | Profile;
   load: () => ProfileConfig;
   init: () => void;
   add: (id: string, accessToken: string, endpoint: string) => ProfileConfig;
+  remove: (id: string) => ProfileConfig;
   update: (profiles: Profile[]) => ProfileConfig;
 };
 
@@ -45,12 +47,17 @@ const ProfileConfigRepository: ProfileConfigRepositoryType = {
     return ProfileConfigRepository.update(profiles);
   },
 
+  remove: (id) => {
+    const currentConfig = ProfileConfigRepository.load();
+    return ProfileConfigRepository.update(currentConfig.profiles.filter((profile) => profile.id !== id));
+  },
+
   update: (profiles) => {
     const config: ProfileConfig = { profiles };
 
     try {
-      fs.mkdirSync(appConfigDirPath(), { recursive: true });
-      fs.writeFileSync(profileConfigFilePath(), JSON.stringify(config, null, 2));
+      ensureConfigDirectory(appConfigDirPath());
+      writeConfigFile(profileConfigFilePath(), JSON.stringify(config, null, 2));
     } catch (e) {
       if (e instanceof Error) console.error(e.message, { cause: e.cause });
     }

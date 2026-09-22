@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import type { ProjectConfig } from "./model";
 import { projectConfigDirPath, projectConfigFilePath } from "./paths";
+import { ensureConfigDirectory, writeConfigFile } from "./permissions";
 
 type ProjectConfigUpdate = Partial<Omit<ProjectConfig, "createdAt" | "updatedAt">>;
 type ProjectConfigInitOptions = {
@@ -26,7 +27,7 @@ const ProjectConfigRepository: ProjectConfigRepositoryType = {
     }
 
     try {
-      fs.mkdirSync(projectConfigDirPath(projectPath), { recursive: true });
+      ensureConfigDirectory(projectConfigDirPath(projectPath));
     } catch (e) {
       if (e instanceof Error) console.error(e.message);
       return;
@@ -41,7 +42,7 @@ const ProjectConfigRepository: ProjectConfigRepositoryType = {
     };
 
     try {
-      fs.writeFileSync(projectConfigFilePath(projectPath), JSON.stringify(config, null, 2));
+      writeConfigFile(projectConfigFilePath(projectPath), JSON.stringify(config, null, 2));
     } catch (e) {
       if (e instanceof Error) console.error(e.message);
       return;
@@ -64,7 +65,7 @@ const ProjectConfigRepository: ProjectConfigRepositoryType = {
     };
 
     try {
-      fs.writeFileSync(projectConfigFilePath(projectPath), JSON.stringify(config, null, 2));
+      writeConfigFile(projectConfigFilePath(projectPath), JSON.stringify(config, null, 2));
     } catch (e) {
       if (e instanceof Error) console.error(e.message);
     }
