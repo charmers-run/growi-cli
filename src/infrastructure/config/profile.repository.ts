@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import type { Profile, ProfileConfig } from "./model";
 import { appConfigDirPath, profileConfigFilePath } from "./paths";
+import { ensureConfigDirectory, writeConfigFile } from "./permissions";
 
 type ProfileConfigRepositoryType = {
   find: (id: string) => null | Profile;
@@ -55,8 +56,8 @@ const ProfileConfigRepository: ProfileConfigRepositoryType = {
     const config: ProfileConfig = { profiles };
 
     try {
-      fs.mkdirSync(appConfigDirPath(), { recursive: true });
-      fs.writeFileSync(profileConfigFilePath(), JSON.stringify(config, null, 2));
+      ensureConfigDirectory(appConfigDirPath());
+      writeConfigFile(profileConfigFilePath(), JSON.stringify(config, null, 2));
     } catch (e) {
       if (e instanceof Error) console.error(e.message, { cause: e.cause });
     }
