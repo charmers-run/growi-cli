@@ -2,6 +2,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { ConflictError, NotFoundError } from "../../shared/errors";
 import { ProfileConfigRepository } from "./profile.repository";
 import { ProjectConfigRepository } from "./project.repository";
 
@@ -11,14 +12,11 @@ const permissionOf = (targetPath: string): string => {
 
 const quietProjectInit = (projectPath: string, profile: string, articlePath: string, options?: { force?: boolean }): void => {
   const originalConsoleLog = console.log;
-  const originalConsoleError = console.error;
   try {
     console.log = () => undefined;
-    console.error = () => undefined;
     ProjectConfigRepository.init(projectPath, profile, articlePath, options);
   } finally {
     console.log = originalConsoleLog;
-    console.error = originalConsoleError;
   }
 };
 
@@ -184,17 +182,13 @@ describe("ProjectConfigRepository", () => {
     });
   });
 
-  test("init does not overwrite an existing project config without force", () => {
+  test("init throws a conflict error for an existing project config without force", () => {
     const projectDir = path.join(tempDir, "project");
     fs.mkdirSync(projectDir);
 
     quietProjectInit(projectDir, "default", "/docs");
-    quietProjectInit(projectDir, "secondary", "/other");
 
-    expect(ProjectConfigRepository.load(projectDir)).toMatchObject({
-      profile: "default",
-      path: "/docs",
-    });
+    expect(() => ProjectConfigRepository.init(projectDir, "secondary", "/other")).toThrow(ConflictError);
   });
 
   test("init overwrites an existing project config with force", () => {
@@ -227,5 +221,12 @@ describe("ProjectConfigRepository", () => {
       createdAt: beforeUpdate.createdAt,
     });
     expect(afterUpdate.updatedAt).not.toBe(beforeUpdate.updatedAt);
+  });
+
+  test("update throws a not found error when project config does not exist", () => {
+    const projectDir = path.join(tempDir, "missing-project");
+    fs.mkdirSync(projectDir);
+
+    expect(() => ProjectConfigRepository.update(projectDir, { path: "/docs" })).toThrow(NotFoundError);
   });
 });
