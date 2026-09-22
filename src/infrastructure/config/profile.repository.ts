@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import type { Profile, ProfileConfig } from "./model";
 import { appConfigDirPath, profileConfigFilePath } from "./paths";
 import { ensureConfigDirectory, writeConfigFile } from "./permissions";
-import { FileSystemError } from "../../shared/errors";
+import { ConfigFileSystemError } from "./errors";
 
 type ProfileConfigRepositoryType = {
   find: (id: string) => null | Profile;
@@ -60,7 +60,7 @@ const ProfileConfigRepository: ProfileConfigRepositoryType = {
       ensureConfigDirectory(appConfigDirPath());
       writeConfigFile(profileConfigFilePath(), JSON.stringify(config, null, 2));
     } catch (e) {
-      throw new FileSystemError("Failed to write profile config", {
+      throw new ConfigFileSystemError("Failed to write profile config", {
         cause: e,
         path: profileConfigFilePath(),
       });

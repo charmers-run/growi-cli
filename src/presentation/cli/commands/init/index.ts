@@ -1,6 +1,11 @@
 import { Command } from "commander";
 import { Config } from "../../../../infrastructure/config";
-import { AppError, ConflictError, FileSystemError, NotFoundError, ValidationError } from "../../../../shared/errors";
+import { AppError, ValidationError } from "../../../../shared/errors";
+import {
+  ConfigFileSystemError,
+  ProfileConfigNotFoundError,
+  ProjectConfigConflictError,
+} from "../../../../infrastructure/config/errors";
 import CommandBase from "../base";
 
 
@@ -27,13 +32,11 @@ class InitCommand extends CommandBase {
     if (!profileId) throw new ValidationError("Profile ID is required");
 
     const profile = Config.profiles.find(profileId);
-    if (!profile) throw new NotFoundError(`Profile '${profileId}' not found`, { resource: "profile" });
+    if (!profile) throw new ProfileConfigNotFoundError(profileId);
 
     const projectPath = process.cwd();
     if (Config.projects.exists(projectPath) && !force) {
-      throw new ConflictError(`Project config already exists in ${projectPath}`, {
-        details: { projectPath },
-      });
+      throw new ProjectConfigConflictError(projectPath);
     }
 
     try {
@@ -41,7 +44,7 @@ class InitCommand extends CommandBase {
     } catch (e) {
       if (e instanceof AppError) throw e;
 
-      throw new FileSystemError("Failed to create config folder", {
+      throw new ConfigFileSystemError("Failed to create config folder", {
         cause: e,
         path: projectPath,
       });
