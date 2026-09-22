@@ -28,13 +28,14 @@
     "dev": "bun run src/index.ts",
     "build": "bun build src/index.ts --outfile dist/index.js --target node",
     "typecheck": "tsc --noEmit",
-    "test": "bun run typecheck"
+    "test": "bun run typecheck && bun test"
   },
   "dependencies": {
     "axios": "^1.20.0",
     "commander": "^15.0.0"
   },
   "devDependencies": {
+    "@types/bun": "^1.4.2",
     "@types/node": "^26.6.2",
     "typescript": "^7.0.2"
   }
