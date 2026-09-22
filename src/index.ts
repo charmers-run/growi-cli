@@ -17,10 +17,10 @@ const commands: CommandBase[] = [
 
 commands.forEach((command) => {
   program.addCommand(command.build())
-})
+});
 
 try {
-  await program.parseAsync(program.args);
+  await program.parseAsync(process.argv);
 } catch (e) {
   console.error(e);
 }
