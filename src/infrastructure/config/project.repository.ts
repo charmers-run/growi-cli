@@ -2,7 +2,11 @@ import * as fs from "node:fs";
 import type { ProjectConfig } from "./model";
 import { projectConfigDirPath, projectConfigFilePath } from "./paths";
 import { ensureConfigDirectory, writeConfigFile } from "./permissions";
-import { ConflictError, FileSystemError, NotFoundError } from "../../shared/errors";
+import {
+  ConfigFileSystemError,
+  ProjectConfigConflictError,
+  ProjectConfigNotFoundError,
+} from "./errors";
 
 type ProjectConfigUpdate = Partial<Omit<ProjectConfig, "createdAt" | "updatedAt">>;
 type ProjectConfigInitOptions = {
@@ -23,15 +27,13 @@ const ProjectConfigRepository: ProjectConfigRepositoryType = {
 
   init: (projectPath, profile, path = "", options = {}) => {
     if (ProjectConfigRepository.exists(projectPath) && !options.force) {
-      throw new ConflictError(`Project config already exists in ${projectPath}`, {
-        details: { projectPath },
-      });
+      throw new ProjectConfigConflictError(projectPath);
     }
 
     try {
       ensureConfigDirectory(projectConfigDirPath(projectPath));
     } catch (e) {
-      throw new FileSystemError(`Failed to create project config directory in ${projectPath}`, {
+      throw new ConfigFileSystemError(`Failed to create project config directory in ${projectPath}`, {
         cause: e,
         path: projectConfigDirPath(projectPath),
       });
@@ -48,7 +50,7 @@ const ProjectConfigRepository: ProjectConfigRepositoryType = {
     try {
       writeConfigFile(projectConfigFilePath(projectPath), JSON.stringify(config, null, 2));
     } catch (e) {
-      throw new FileSystemError(`Failed to write project config in ${projectPath}`, {
+      throw new ConfigFileSystemError(`Failed to write project config in ${projectPath}`, {
         cause: e,
         path: projectConfigFilePath(projectPath),
       });
@@ -59,10 +61,7 @@ const ProjectConfigRepository: ProjectConfigRepositoryType = {
 
   update: (projectPath, data) => {
     if (!ProjectConfigRepository.exists(projectPath)) {
-      throw new NotFoundError(`Project config does not exist in ${projectPath}`, {
-        resource: "project-config",
-        details: { projectPath },
-      });
+      throw new ProjectConfigNotFoundError(projectPath);
     }
 
     const currentConfig = ProjectConfigRepository.load(projectPath);
@@ -75,7 +74,7 @@ const ProjectConfigRepository: ProjectConfigRepositoryType = {
     try {
       writeConfigFile(projectConfigFilePath(projectPath), JSON.stringify(config, null, 2));
     } catch (e) {
-      throw new FileSystemError(`Failed to write project config in ${projectPath}`, {
+      throw new ConfigFileSystemError(`Failed to write project config in ${projectPath}`, {
         cause: e,
         path: projectConfigFilePath(projectPath),
       });
