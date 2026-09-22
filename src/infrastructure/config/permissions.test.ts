@@ -2,7 +2,10 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { ConflictError, NotFoundError } from "../../shared/errors";
+import {
+  ProjectConfigConflictError,
+  ProjectConfigNotFoundError,
+} from "./errors";
 import { ProfileConfigRepository } from "./profile.repository";
 import { ProjectConfigRepository } from "./project.repository";
 
@@ -188,7 +191,7 @@ describe("ProjectConfigRepository", () => {
 
     quietProjectInit(projectDir, "default", "/docs");
 
-    expect(() => ProjectConfigRepository.init(projectDir, "secondary", "/other")).toThrow(ConflictError);
+    expect(() => ProjectConfigRepository.init(projectDir, "secondary", "/other")).toThrow(ProjectConfigConflictError);
   });
 
   test("init overwrites an existing project config with force", () => {
@@ -227,6 +230,6 @@ describe("ProjectConfigRepository", () => {
     const projectDir = path.join(tempDir, "missing-project");
     fs.mkdirSync(projectDir);
 
-    expect(() => ProjectConfigRepository.update(projectDir, { path: "/docs" })).toThrow(NotFoundError);
+    expect(() => ProjectConfigRepository.update(projectDir, { path: "/docs" })).toThrow(ProjectConfigNotFoundError);
   });
 });
