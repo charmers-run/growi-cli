@@ -1,6 +1,6 @@
 import { Command } from "commander";
-import { Config } from "../../../infrastructure/config";
-import CommandBase from "./base";
+import { Config } from "../../../../infrastructure/config";
+import CommandBase from "../base";
 
 
 type Options = {
