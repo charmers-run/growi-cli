@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { Config } from "../../../../infrastructure/config";
-import { NotFoundError } from "../../../../shared/errors";
+import { ProfileConfigNotFoundError } from "../../../../infrastructure/config/errors";
 import CommandBase from "../base";
 
 class ProfileRemoveCommand extends CommandBase {
@@ -12,10 +12,7 @@ class ProfileRemoveCommand extends CommandBase {
   }
 
   protected async action(profileId: string): Promise<void> {
-    if (!Config.profiles.find(profileId)) throw new NotFoundError(`Profile '${profileId}' not found`, {
-      resource: "profile",
-      details: { profileId },
-    });
+    if (!Config.profiles.find(profileId)) throw new ProfileConfigNotFoundError(profileId);
 
     Config.profiles.remove(profileId);
     console.log(`Profile '${profileId}' removed`);
